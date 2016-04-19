@@ -409,7 +409,10 @@
 {
     if ([_webView canGoBack]) {
         [_webView goBack];
-    }
+	} else {
+		[self stopLoading];
+		[self updateBackAndForwardButtons];
+	}
 }
 
 - (void)goForward:(id)sender
@@ -549,7 +552,10 @@
 
 - (void)stopLoading
 {
+	NSLog(@"%@ - %s",self,__PRETTY_FUNCTION__);
     [self.webView stopLoading];
+	[_progressView setProgress:0 animated:YES];
+
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
 }
 
@@ -557,7 +563,11 @@
 #pragma mark - UIWebViewDelegate methods
 
 - (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
-{    
+{
+	if (navigationType == UIWebViewNavigationTypeLinkClicked) {
+		_backwardBarItem.enabled = YES;
+	}
+	
     if (request.URL && !_presentingActivities) {
         return YES;
     }
@@ -574,7 +584,7 @@
         [self setActivityIndicatorsVisible:YES];
     }
     
-    _backwardBarItem.enabled = [_webView canGoBack];
+//    _backwardBarItem.enabled = [_webView canGoBack];
     _forwardBarItem.enabled = [_webView canGoForward];
 }
 
@@ -588,8 +598,7 @@
         [self setActivityIndicatorsVisible:NO];
     }
     
-    _backwardBarItem.enabled = [_webView canGoBack];
-    _forwardBarItem.enabled = [_webView canGoForward];
+	[self updateBackAndForwardButtons];
     
     [self setViewTitle:[self pageTitle]];
     
@@ -604,6 +613,11 @@
     [self setLoadingError:error];
 }
 
+- (void)updateBackAndForwardButtons
+{
+	_backwardBarItem.enabled = [_webView canGoBack];
+	_forwardBarItem.enabled = [_webView canGoForward];
+}
 
 #pragma mark - UIGestureRecognizerDelegate methods
 
@@ -634,7 +648,12 @@
 
 - (void)webViewProgress:(NJKWebViewProgress *)webViewProgress updateProgress:(float)progress
 {
+	NSLog(@"%@ - %s",self,__PRETTY_FUNCTION__);
     [self.progressView setProgress:progress animated:YES];
+	
+	if (_webView.isLoading == NO) {
+		[self.progressView setProgress:0 animated:YES];
+	}
 }
 
 
