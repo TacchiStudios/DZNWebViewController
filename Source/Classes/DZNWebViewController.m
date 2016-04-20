@@ -87,18 +87,22 @@
         _actionBarItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(presentActivityController:)];
         [self.navigationItem setRightBarButtonItem:_actionBarItem];
     }
-    
-    self.view = self.webView;
+	
+	[self.webView setFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 44)];
+	[self.webView setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleHeight];
+	[self.view addSubview:self.webView];
+	
     self.automaticallyAdjustsScrollViewInsets = YES;
-    
-    [self setToolbarItems:self.navigationItems animated:NO];
+	
+	UIToolbar *toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, self.view.frame.size.height - 44, self.view.frame.size.width, 44)];
+	[toolbar setItems:self.navigationItems];
+	[toolbar setAutoresizingMask:UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleTopMargin];
+	[self.view addSubview:toolbar];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    [self.navigationController setToolbarHidden:NO];
 
     self.navigationController.toolbar.barTintColor = _toolbarBackgroundColor;
     self.navigationController.toolbar.tintColor = _toolbarTintColor;
@@ -111,7 +115,7 @@
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
+
     if (!_didLoadContent) {
         [self startRequestWithURL:_URL];
     }
@@ -120,14 +124,14 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
 	[super viewWillDisappear:animated];
-    
+
     [self clearProgressViewAnimated:animated];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
 	[super viewDidDisappear:animated];
-    
+
     [self stopLoading];
 }
 
