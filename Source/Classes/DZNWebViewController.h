@@ -56,6 +56,9 @@ typedef NS_OPTIONS(NSUInteger, DZNWebViewControllerLoadingStyle) {
 /** The navigation bar's title custom font. Default uses UINavigation's appearance title text attributes with key NSForegroundColorAttributeName. */
 @property (nonatomic, strong) UIColor *titleColor;
 
+/** Just in case you want to override the loading of URLs etc. **/
+@property (nonatomic, weak) id <UIWebViewDelegate> proxyDelegate;
+
 /**
  * Initializes and returns a newly created webview controller with an initial HTTP URL to be requested as soon as the view appears.
  *

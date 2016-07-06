@@ -573,6 +573,9 @@
 	}
 	
     if (request.URL && !_presentingActivities) {
+        if (self.proxyDelegate && [self.proxyDelegate respondsToSelector:@selector(webView:shouldStartLoadWithRequest:navigationType:)]) {
+            return [self.proxyDelegate webView:webView shouldStartLoadWithRequest:request navigationType:navigationType];
+        }
         return YES;
     }
     
